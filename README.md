@@ -1,10 +1,27 @@
-# Getting Started with Create React App
+# Getting Started
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+1. To get started, select the green "Code" button at the top and download the zip file.
+2. Unzip the folder to somewhere convenient
+3. Open the command prompt terminal on your computer and navigate to where the folder is located on your local system
+4. Once you are in the folder, type the command "npm i" and hit enter, this double checks all the pieces are installed correctly
+5. Once this command finishes, type the command "npm start" and hit enter, this will start up the frontend of the application.
+6. Open up a second command prompt terminal without closing the first one and navigate back to the folder
+7. Once back in the app folder, navigate into the subfolder called "backend" and type the command "node server.js" and hit enter, this will start up the backend server for the application.
+8. With both ends running the application should now be accessible from a browser of your choice. Make sure not to close either of the terminals or else you'll have to restart its step.
+
+You may be prompted to download additional software like Node.js in order to run some scripts. If so just follow the download instructions and then retry the commands.
+
+When working in the command prompt terminal these commands are useful:
+
+-   "ls" : this will list out all the contents of whichever folder you are currently in
+-   "cd 'insert-folder-name'" : this will navigate the terminal into whichever folder you name
+-   "cd .." : this will navigate back out of the current folder and into the parent folder
+
+### For additional help feel free to text me or google a cheat-sheet for clarifaction
+
+### The info below is boilerplate startup info which shouldn't be necessary but I'll leave in just in case
 
 ## Available Scripts
-
-In the project directory, you can run:
 
 ### `npm start`
 
