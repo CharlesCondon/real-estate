@@ -26,16 +26,32 @@ const customIcon = new L.Icon({
 });
 
 function ZoomableMarker({ location, info, assetData }) {
+    const [zone, setZone] = React.useState('');
+    let z = ""
     const map = useMap();
     //console.log(assetData)
-    const handleClick = () => {
+    const handleClick = async () => {
+        console.log(location)
+        try {
+			const response = await axios.get(`https://data.cityofchicago.org/api/geospatial/dj47-wfun?lat=${location[0]}&lng=${location[1]}8&zoom=13`);
+
+			if (response.data) {
+                console.log(response.data[0])
+				setZone(response.data[0]["zone_class"])
+				//results.push(response.data.features);
+			}
+			//console.log(results[0].features[0]);
+		} catch (error) {
+			console.error(`Error fetching data `, error);
+		}
+
         // Set the map view to the marker's location with a higher zoom level
         map.setView([location[0], location[1]], map.getZoom() < 16 ? 16 : map.getZoom());
     };
 
-    const num = Math.floor(assetData["Market Value"]);
-    const value = "$" + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    const footage = assetData.BldgSqft.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    // const num = Math.floor(assetData["Market Value"]);
+    // const value = "$" + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    // const footage = assetData.BldgSqft.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   
     return (
         <Marker 
@@ -45,10 +61,12 @@ function ZoomableMarker({ location, info, assetData }) {
         >
             <Popup>
                 <p>ADDRESS: {info.ADDRDELIV}</p>
-                <p>PIN: {assetData.KeyPIN}</p>
-                <p>SQFT: {footage}</p>
-                <p>Value: {value}</p>
-                <p>PROPERTY USE: {assetData["Property Use"]}</p>
+                <p>PIN: {info.PIN}</p>
+                {/* <p>SQFT: {footage}</p>
+                <p>Value: {value}</p> */}
+                {/* <p>PROPERTY USE: {assetData["Property Use"]}</p> */}
+                {zone ? <p>Zone Class: {zone}</p> : <></>}
+                
             </Popup>
         </Marker>
     );

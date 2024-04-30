@@ -22,6 +22,7 @@ function App() {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
+				//console.log(response.json())
                 return response.json();
             })
             .then(data => setData(data))
@@ -30,28 +31,49 @@ function App() {
                 setError(error.message);
             });
     }, []);
-
+	//let counter = 0;
 	async function fetchData(pins) {
 		setLoading(true);
 		const results = [];
-		console.log(pins)
-		for (const pin of pins) {
-			// TBD
-			// can be optimized to limit api calls by querying all pins at the same time using AND 
-			const url = `https://gis.cookcountyil.gov/traditional/rest/services/addressZipCode/MapServer/0/query?where=PIN%20%3D%20'${pin}'&outFields=*&outSR=4326&f=json`;
-			try {
-				const response = await axios.get(url);
-				console.log(response.data.features[0])
-				if (response.data.features[0]) {
-					results.push(response.data.features[0]);
-				}
-				//console.log(results[0].features[0]);
-			} catch (error) {
-				console.error(`Error fetching data for PIN: ${pin}`, error);
-				results.push({ error: `Error fetching data for PIN: ${pin}` });
+		
+		const temp = pins.slice(0, pins.length/4);
+		console.log(temp)
+		let url = 'https://gis.cookcountyil.gov/traditional/rest/services/addressZipCode/MapServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json'
+		//let inputPins = '';
+
+		// if (temp.length === 1) {
+		// 	url = `https://gis.cookcountyil.gov/traditional/rest/services/addressZipCode/MapServer/0/query?where=PIN%20%3D%20'${pins[0]}'&outFields=*&outSR=4326&f=json`;
+		// } else {
+		// 	inputPins = temp.join("'%20AND%20PIN%20%3D%20'");
+		// 	url = `https://gis.cookcountyil.gov/traditional/rest/services/addressZipCode/MapServer/0/query?where=PIN%20%3D%20'${inputPins}'&outFields=*&outSR=4326&f=json`;
+		// 	console.log(url)
+		// }
+		//console.log(inputPins)
+
+		try {
+			const response = await axios.get(url);
+			console.log(response.data.features)
+			if (response.data.features) {
+				setLocationData(response.data.features)
+				//results.push(response.data.features);
 			}
+			//console.log(results[0].features[0]);
+		} catch (error) {
+			console.error(`Error fetching data `, error);
+			results.push({ error: `Error fetching data` });
 		}
-		setLocationData(results);
+		
+		// for (const pin of pins) {
+		// 	if (counter > 100) {
+		// 		break;
+		// 	}
+		// 	// TBD
+		// 	// can be optimized to limit api calls by querying all pins at the same time using AND 
+		// 	url = `https://gis.cookcountyil.gov/traditional/rest/services/addressZipCode/MapServer/0/query?where=PIN%20%3D%20'${pin}'&outFields=*&outSR=4326&f=json`;
+			
+		// 	counter++;
+		// }
+		//setLocationData(results);
 		setLoading(false);
 	}
 
