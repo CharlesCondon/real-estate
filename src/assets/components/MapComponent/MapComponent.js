@@ -37,27 +37,53 @@ const customIcon = new L.Icon({
     // className: 'iconCont' // Adding custom class name
 });
 
-function ZoomableMarker({ location, info, assetData }) {
+function ZoomableMarker({ location, info, assetData, setAddress, setPin, setZoning, setValues }) {
     const [zone, setZone] = React.useState('');
     const [popupOpen, setPopupOpen] = React.useState(false);
+    const [data, setData] = React.useState();
+    const [error, setError] = React.useState();
     const markerRef = React.useRef(null);
     let z = ""
     const map = useMap();
+
+    
     //console.log(assetData)
     const handleClick = async () => {
-        console.log(location)
+        setAddress(info.ADDRDELIV)
+        setPin(info.PIN)
+        setZoning("")
         try {
 			const response = await axios.get(`https://data.cityofchicago.org/api/geospatial/dj47-wfun?lat=${location[0]}&lng=${location[1]}8&zoom=13`);
 
 			if (response.data) {
-                console.log(response.data[0])
+                //console.log(response.data[0])
 				setZone(response.data[0]["zone_class"])
+                setZoning(response.data[0]["zone_class"])
 				//results.push(response.data.features);
 			}
 			//console.log(results[0].features[0]);
 		} catch (error) {
 			console.error(`Error fetching data `, error);
 		}
+
+        try {
+            fetch(`http://localhost:3001/api/data/${info.PIN}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    //console.log(response.json())
+                    return response.json();
+            })
+            .then(data => setValues(data))
+            .then(data => console.log(data))
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                setError(error.message);
+            });
+        } catch (error) {
+            console.error(`Error fetching data `, error);
+        }
 
         // Set the map view to the marker's location with a higher zoom level
         //map.setView([location[0], location[1]], map.getZoom() < 16 ? 16 : map.getZoom());
@@ -96,7 +122,7 @@ function ZoomableMarker({ location, info, assetData }) {
     );
 }
 
-const MapComponent = ({ center, zoom, locationData, assetData }) => {
+const MapComponent = ({ center, zoom, locationData, assetData, setAddress, setPin, setZoning, setValues }) => {
     const [map, setMap] = React.useState(null);
     const [locations, setLocations] = React.useState();
     const [data, setData] = React.useState([]);
@@ -112,7 +138,7 @@ const MapComponent = ({ center, zoom, locationData, assetData }) => {
         React.useEffect(() => {
             const handleMove = () => {
                 const bounds = map.getBounds();
-                console.log(bounds);
+                //console.log(bounds);
                 //fetchData(bounds);
             };
             map.on('moveend', handleMove);
@@ -156,7 +182,7 @@ const MapComponent = ({ center, zoom, locationData, assetData }) => {
             />
             <UpdateMapCenter center={center} zoom={zoom} />
             {locationData ? locationData.map((location, index) => (
-                <ZoomableMarker key={index} location={[location.geometry.y, location.geometry.x]} info={location.attributes} assetData={assetData[index]}/>                    
+                <ZoomableMarker key={index} location={[location.geometry.y, location.geometry.x]} info={location.attributes} assetData={assetData[index]} setAddress={setAddress} setPin={setPin} setZoning={setZoning} setValues={setValues}/>                    
             )) : <></>}
         </MapContainer>
     );
