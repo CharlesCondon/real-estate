@@ -10,7 +10,19 @@ const UpdateMapCenter = ({ center, zoom }) => {
     const map = useMap();
   
     React.useEffect(() => {
-      if (center) map.flyTo(center, zoom);
+        if (center) map.flyTo(center, zoom);
+
+
+        // const x1 = -87.80788421630861;
+        // const y1 = 41.79038482309324;
+        // const x2 = -87.59227752685548;
+        // const y2 = 41.90955923001296;
+    
+        // const bounds = [[y1, x1], [y2, x2]];
+        // //console.log(bounds)
+  
+        // L.rectangle(bounds, { color: '#ff7800', weight: 1 }).addTo(map);
+      
       
     }, [center, zoom, map]);
   
@@ -27,6 +39,8 @@ const customIcon = new L.Icon({
 
 function ZoomableMarker({ location, info, assetData }) {
     const [zone, setZone] = React.useState('');
+    const [popupOpen, setPopupOpen] = React.useState(false);
+    const markerRef = React.useRef(null);
     let z = ""
     const map = useMap();
     //console.log(assetData)
@@ -46,20 +60,30 @@ function ZoomableMarker({ location, info, assetData }) {
 		}
 
         // Set the map view to the marker's location with a higher zoom level
-        map.setView([location[0], location[1]], map.getZoom() < 16 ? 16 : map.getZoom());
+        //map.setView([location[0], location[1]], map.getZoom() < 16 ? 16 : map.getZoom());
+        setPopupOpen(true);
+        markerRef.current.openPopup();
     };
 
     // const num = Math.floor(assetData["Market Value"]);
     // const value = "$" + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     // const footage = assetData.BldgSqft.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    const handleMouseLeave = () => {
+        // Close the popup when mouse leaves
+        markerRef.current.closePopup();
+        setPopupOpen(false);
+        
+    };
   
     return (
         <Marker 
             position={[location[0], location[1]]}
-            eventHandlers={{ click: handleClick }}
+            eventHandlers={{ mouseover: handleClick, mouseleave: handleMouseLeave }}
             icon={customIcon}
+            ref={markerRef}
         >
-            <Popup>
+            {popupOpen && (<Popup>
                 <p>ADDRESS: {info.ADDRDELIV}</p>
                 <p>PIN: {info.PIN}</p>
                 {/* <p>SQFT: {footage}</p>
@@ -67,7 +91,7 @@ function ZoomableMarker({ location, info, assetData }) {
                 {/* <p>PROPERTY USE: {assetData["Property Use"]}</p> */}
                 {zone ? <p>Zone Class: {zone}</p> : <></>}
                 
-            </Popup>
+            </Popup>)}
         </Marker>
     );
 }
@@ -75,18 +99,65 @@ function ZoomableMarker({ location, info, assetData }) {
 const MapComponent = ({ center, zoom, locationData, assetData }) => {
     const [map, setMap] = React.useState(null);
     const [locations, setLocations] = React.useState();
-    console.log(locationData)
+    const [data, setData] = React.useState([]);
+
+    //console.log(locationData)
+
+    //-87.80788421630861,41.79038482309324,-87.59227752685548,41.90955923001296
+    //41.79038482309324,-87.80788421630861,41.90955923001296,-87.59227752685548
+
+    // Custom hook to detect map movement
+    function MapMovementHandler() {
+        const map = useMap();
+        React.useEffect(() => {
+            const handleMove = () => {
+                const bounds = map.getBounds();
+                console.log(bounds);
+                //fetchData(bounds);
+            };
+            map.on('moveend', handleMove);
+            return () => {
+                map.off('moveend', handleMove);
+            };
+        }, [map], data);
+        return null;
+    }
+
+    // Fetch data from API based on map bounds
+    // const fetchData = async (bounds) => {
+    //     const { _northEast, _southWest } = bounds;
+    //     const { lat: ymin, lng: xmin } = _southWest;
+    //     const { lat: ymax, lng: xmax } = _northEast;
+    //     console.log( xmin + ',' + ymin + "," + xmax + "," + ymax)
+    //     // console.log( ymin)
+    //     // console.log( xmax)
+    //     // console.log( ymax)
+    //     //const url = `https://gis.cookcountyil.gov/traditional/rest/services/addressZipCode/MapServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&geometry=${xmin}%2C${ymin}%2C${xmax}%2C${ymax}&spatialRel=esriSpatialRelIntersects&outFields=*&outSR=4326&f=json`;
+    //     const url = `https://gis.cookcountyil.gov/traditional/rest/services/addressZipCode/MapServer/0/query?where=1%3D1&outFields=*&geometry=${ymin}%2C${xmin}%2C${ymax}%2C${xmax}&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelWithin&outSR=4326&f=json`;
+    //     console.log(url)
+    //     //const url = `https://gis.cookcountyil.gov/traditional/rest/services/addressZipCode/MapServer/0/query?where=&outFields=*&outSR=4326&f=json&bbox=${_southWest.lng},${_southWest.lat},${_northEast.lng},${_northEast.lat}`;
+        
+    //     try {
+    //         const response = await fetch(url);
+    //         const responseData = await response.json();
+    //         console.log(responseData.features)
+    //         setData(responseData.features);
+    //     } catch (error) {
+    //         console.error('Error fetching data:', error);
+    //     }
+    // };
 
     return (
-        <MapContainer center={center} zoom={zoom} style={{ height: '100vh', width: '100%' }}>
+        <MapContainer center={center} zoom={zoom} style={{ height: window.innerHeight-120, width: '100%' }}>
+            <MapMovementHandler />
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
             <UpdateMapCenter center={center} zoom={zoom} />
-            {locationData.map((location, index) => (
+            {locationData ? locationData.map((location, index) => (
                 <ZoomableMarker key={index} location={[location.geometry.y, location.geometry.x]} info={location.attributes} assetData={assetData[index]}/>                    
-            ))}
+            )) : <></>}
         </MapContainer>
     );
 };

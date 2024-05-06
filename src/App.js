@@ -5,10 +5,11 @@ import TownshipSearch from './assets/components/TownshipSearch/TownshipSearch';
 import MapComponent from './assets/components/MapComponent/MapComponent';
 import axios from 'axios';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import Navbar from './assets/components/Navbar/Navbar';
 
 function App() {
-	const [center, setCenter] = React.useState([37.8, -96]); // Default center of the US
-    const [zoom, setZoom] = React.useState(4); // Default zoom level
+	const [center, setCenter] = React.useState([41.85, -87.7]); // Default center of the US
+    const [zoom, setZoom] = React.useState(13); // Default zoom level
     const [data, setData] = React.useState(); // Default zoom level
     const [error, setError] = React.useState(); // Default zoom level
 	const [loading, setLoading] = React.useState(false);
@@ -98,10 +99,15 @@ function App() {
 	}
 
 	return (
-		<div>
-            <TownshipSearch onSearch={handleTownshipSearch} />
-			{loading ? <p>Loading</p> : <></>}
-            <MapComponent center={center} zoom={zoom} locationData={locationData} assetData={data} />
+		<div className='app'>
+			<Navbar/>
+			<div className='mapCont'>
+				<div className='infoCont'>
+					<TownshipSearch onSearch={handleTownshipSearch} />
+					{loading ? <p>Loading</p> : <></>}
+				</div>
+				<MapComponent center={center} zoom={zoom} locationData={locationData} assetData={data} />
+			</div>
         </div>
 	);
 }
