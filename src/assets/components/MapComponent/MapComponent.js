@@ -45,13 +45,17 @@ function ZoomableMarker({ location, info, assetData, setAddress, setPin, setZoni
     const markerRef = React.useRef(null);
     let z = ""
     const map = useMap();
-
+    
+    React.useEffect(() => {
+        map.setView([location[0], location[1]], map.getZoom() < 13 ? 13 : map.getZoom());
+    }, [location, map]);
     
     //console.log(assetData)
     const handleClick = async () => {
         setAddress(info.ADDRDELIV)
         setPin(info.PIN)
         setZoning("")
+        setValues()
         try {
 			const response = await axios.get(`https://data.cityofchicago.org/api/geospatial/dj47-wfun?lat=${location[0]}&lng=${location[1]}8&zoom=13`);
 
@@ -86,14 +90,10 @@ function ZoomableMarker({ location, info, assetData, setAddress, setPin, setZoni
         }
 
         // Set the map view to the marker's location with a higher zoom level
-        //map.setView([location[0], location[1]], map.getZoom() < 16 ? 16 : map.getZoom());
+        //map.setView([location[0], location[1]], map.getZoom() < 13 ? 13 : map.getZoom());
         setPopupOpen(true);
         markerRef.current.openPopup();
     };
-
-    // const num = Math.floor(assetData["Market Value"]);
-    // const value = "$" + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    // const footage = assetData.BldgSqft.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
     const handleMouseLeave = () => {
         // Close the popup when mouse leaves
@@ -105,7 +105,7 @@ function ZoomableMarker({ location, info, assetData, setAddress, setPin, setZoni
     return (
         <Marker 
             position={[location[0], location[1]]}
-            eventHandlers={{ mouseover: handleClick, mouseleave: handleMouseLeave }}
+            eventHandlers={{ click: handleClick, mouseleave: handleMouseLeave }}
             icon={customIcon}
             ref={markerRef}
         >

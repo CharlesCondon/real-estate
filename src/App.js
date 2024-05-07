@@ -37,13 +37,17 @@ function App() {
             });
     }, []);
 	//let counter = 0;
-	async function fetchData(pins) {
+	async function fetchData(pin) {
 		setLoading(true);
 		const results = [];
 		
-		const temp = pins.slice(0, pins.length/4);
-		console.log(temp)
-		let url = 'https://gis.cookcountyil.gov/traditional/rest/services/addressZipCode/MapServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json'
+		// const temp = pins.slice(0, pins.length/4);
+		// console.log(temp)
+
+		//let url = 'https://gis.cookcountyil.gov/traditional/rest/services/addressZipCode/MapServer/0/query?where=PIN%20%3D%201%3D1&outFields=*&outSR=4326&f=json'
+
+		let url = `https://gis.cookcountyil.gov/traditional/rest/services/addressZipCode/MapServer/0/query?where=PIN%20%3D%20'${pin}'&outFields=*&outSR=4326&f=json`
+
 		//let inputPins = '';
 
 		// if (temp.length === 1) {
@@ -89,14 +93,15 @@ function App() {
 	function handleTownshipSearch(township) {
 		// Assuming you have a function to fetch township data
 		//const data = findTownshipData(township);
-		if (data.length > 0) {
-			console.log(data)
-			const buildKeys = data.map((d) => d.KeyPIN)
-				.map((b) => b.replaceAll('-', ''));
-
+		//if (data.length > 0) {
+		if (township.length > 0) {
+			console.log(township)
+			// const buildKeys = data.map((d) => d.KeyPIN)
+			// 	.map((b) => b.replaceAll('-', ''));
+			
 			// console.log(buildKeys)
 			// setPins(buildKeys)
-			fetchData(buildKeys);
+			fetchData(township);
 			//console.log(buildKeys)
 			// const { latitude, longitude } = data[0];
 			// setCenter([latitude, longitude]);
@@ -109,6 +114,7 @@ function App() {
 	let USDollar = new Intl.NumberFormat('en-US', {
 		style: 'currency',
 		currency: 'USD',
+		maximumSignificantDigits: 3,
 	});
 
 	return (

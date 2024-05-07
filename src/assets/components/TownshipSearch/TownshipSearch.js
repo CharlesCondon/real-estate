@@ -9,7 +9,7 @@ function TownshipSearch({ onSearch }) {
                 type="text"
                 value={input}
                 onChange={e => setInput(e.target.value)}
-                placeholder="Enter your township"
+                placeholder="Enter PIN"
             />
             <button onClick={() => onSearch(input)}>Search</button>
         </div>
