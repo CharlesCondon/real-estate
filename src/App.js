@@ -6,6 +6,7 @@ import MapComponent from './assets/components/MapComponent/MapComponent';
 import axios from 'axios';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import Navbar from './assets/components/Navbar/Navbar';
+import Footer from './assets/components/Footer/Footer';
 
 function App() {
 	const [center, setCenter] = React.useState([41.85, -87.7]); // Default center of the US
@@ -168,6 +169,7 @@ function App() {
 				</div>
 				<MapComponent center={center} zoom={zoom} locationData={locationData} assetData={data} setAddress={setAddress} setPin={setPin} setZoning={setZoning} setValues={setValues} setZoneLink={setZoneLink} />
 			</div>
+			<Footer/>
         </div>
 	);
 }

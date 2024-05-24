@@ -118,7 +118,7 @@ const MapComponent = ({ center, zoom, locationData, setAddress, setPin, setZonin
     // const [data, setData] = React.useState([]);
 
     return (
-        <MapContainer center={center} zoom={zoom} style={{ height: window.innerHeight-120, width: '100%', zIndex:'0', boxShadow: "inset 20px 10px 25px -12px black" }}>
+        <MapContainer center={center} zoom={zoom} style={{ height: window.innerHeight-127, width: '100%', zIndex:'0', boxShadow: "inset 20px 10px 25px -12px black" }}>
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
