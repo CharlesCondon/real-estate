@@ -72,7 +72,7 @@ function ZoomableMarker({ location, info, setAddress, setPin, setZoning, setValu
 		}
 
         try { // get scraping info
-            const response = await fetch(`http://localhost:3001/api/data/${info.PIN}`)
+            const response = await fetch(`https://real-estate-backend.adaptable.app/api/data/${info.PIN}`)
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
