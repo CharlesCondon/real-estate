@@ -9,6 +9,9 @@
     z-index: 10;
     background-color: white;
 }
+.navCont > h1 {
+    color: rgb(99,102,241);
+}
 
 .navBtns {
     display: flex;

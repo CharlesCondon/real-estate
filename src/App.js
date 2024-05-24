@@ -1,12 +1,13 @@
 import './App.css';
 import React from 'react'
-import * as XLSX from 'xlsx/xlsx.mjs';
+// import * as XLSX from 'xlsx/xlsx.mjs';
 import TownshipSearch from './assets/components/TownshipSearch/TownshipSearch';
 import MapComponent from './assets/components/MapComponent/MapComponent';
 import axios from 'axios';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+// import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import Navbar from './assets/components/Navbar/Navbar';
 import Footer from './assets/components/Footer/Footer';
+import pdfImg from './assets/images/pdf-file.png';
 
 function App() {
 	const [center, setCenter] = React.useState([41.85, -87.7]); // Default center of the US
@@ -72,6 +73,9 @@ function App() {
 			let userArr = userInput.split(" ");
 			let inputType;
 
+			setZoning();
+			//setValues();
+
 			if (userArr.length > 1) {
 				inputType = 1
 				fetchData(userArr, inputType);
@@ -104,29 +108,31 @@ function App() {
 					<div className='buildingInfo'>
 						{address && (
 							<div>
-								<h2>Address:</h2>
-								<h3>{address}</h3>
+								{/* <h2>Address:</h2> */}
+								<h1>{address}</h1>
 							</div>
 						)}
-						<hr></hr>
-						{pin && (
-							<div>
-								<h2>PIN:</h2>
-								<h3>{pin}</h3>
-							</div>
-						)}
-						<hr></hr>
-						{zone && (
-							<>
-								<div>
-									<h2>Zoning Code:</h2>
-									<h3>{zone}</h3>
-									<a href={zoneLink} target='_blank' rel='noreferrer'>Learn More {'>'}</a>
+						<div className='pinZoneCont'>
+							{pin && (
+								<div className='infoBlock'>
+									<h2>PIN:</h2>
+									<h3>{pin}</h3>
 								</div>
-								<hr></hr>
-							</>
-						)}
-						
+							)}
+							
+							{zone && (
+								<>
+									<div className='infoBlock'>
+										<h2>Zoning Code:</h2>
+										<div className='zoneText'>
+											<h3>{zone}</h3>
+											<a href={zoneLink} target='_blank' rel='noreferrer'>Learn More {'>'}</a>
+										</div>
+									</div>
+									
+								</>
+							)}
+						</div>
 						{values["2023 market"] ? (
 							<div>
 								<table>
@@ -149,23 +155,31 @@ function App() {
 									</tbody>
 								</table>
 							</div>
-						) : <div>
+						) : <div className='assessorLink'>
 								<h2><a href={`https://www.cookcountyassessor.com/pin/${pin}`} target='_blank' rel='noreferrer'>Assessor Data</a></h2>
-								<hr></hr>
 							</div>}
 						
 						{values && (
 							<div>
 								{/* <h3>Value: {USDollar.format(values.value)}</h3> */}
-								<div>
+								<div className='taxBlock'>
 									<h2>Tax Bills & History</h2>
-									<div>
+									<hr></hr>
+									<div className='taxBill'>
 										<h3>2023:</h3>
-										<a href={values["2023 taxbill"]} target='_blank' rel="noreferrer">Tax Year 2023 First Installment</a>
+										<div className='taxBillLink'>
+											<img src={pdfImg} alt='' />
+											<a href={values["2023 taxbill"]} target='_blank' rel="noreferrer">Tax Year 2023 First Installment</a>
+										</div>
+										
 									</div>
-									<div>
+									<div className='taxBill'>
 										<h3>2022:</h3>
-										<a href={values["2022 taxbill"]} target='_blank' rel="noreferrer">Tax Year 2022 Second Installment</a>
+										<div className='taxBillLink'>
+											<img src={pdfImg} alt='' />
+											<a href={values["2022 taxbill"]} target='_blank' rel="noreferrer">Tax Year 2022 Second Installment</a>
+										</div>
+										
 									</div>
 								</div>
 							</div>

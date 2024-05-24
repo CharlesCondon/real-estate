@@ -16,13 +16,92 @@
 
 .infoCont {
   position: relative;
-  width: 40%;
+  max-width: 440px;
   padding: 20px;
   box-shadow: 5px 0px 15px -5px rgb(0, 0, 0);
   z-index: 5;
+  box-sizing: border-box;
 }
 
 table, th, td {
   border: 1px solid black;
   padding: 5px;
+}
+
+.pinZoneCont {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.infoBlock {
+  flex: 1 1 auto;
+  background-color: rgb(99,102,241);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 5px;
+  padding: 15px;
+  color: white;
+  gap: 10px;
+}
+.infoBlock > h2 {
+  margin: 0;
+}
+.infoBlock > h3, .zoneText > h3 {
+  margin: 0;
+}
+.zoneText > a {
+  color: white;
+}
+
+.zoneText {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.assessorLink > h2 {
+  text-align: center;
+  font-size: 32px;
+}
+
+.taxBlock {
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(99,102,241);
+  border-radius: 5px;
+  padding: 15px;
+  color: white;
+}
+.taxBlock > h2 {
+  margin: 0;
+  text-align: center;
+}
+.taxBlock > hr {
+  width: 100%;
+}
+
+.taxBill {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+}
+.taxBill > a {
+  color: white;
+}
+
+.taxBillLink {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+.taxBillLink > img {
+  width: 20px;
+}
+.taxBillLink > a {
+  color: white;
 }

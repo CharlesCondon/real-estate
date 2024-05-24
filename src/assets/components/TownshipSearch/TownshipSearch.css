@@ -1,0 +1,19 @@
+.searchCont {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.searchCont > input {
+    flex: 1;
+    padding: 10px 5px;
+    font-size: 20px;
+}
+.searchCont > button {
+    background-color: rgb(99,102,241);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 20px;
+    padding: 0 10px;
+}
