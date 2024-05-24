@@ -8,11 +8,21 @@
 }
 
 .mapCont {
+  position: relative;
   display: flex;
   flex-direction: row;
-  padding: 0 20px;
+  height: 100%;
 }
 
 .infoCont {
-  min-width: 400px;
+  position: relative;
+  width: 40%;
+  padding: 20px;
+  box-shadow: 5px 0px 15px -5px rgb(0, 0, 0);
+  z-index: 5;
+}
+
+table, th, td {
+  border: 1px solid black;
+  padding: 5px;
 }

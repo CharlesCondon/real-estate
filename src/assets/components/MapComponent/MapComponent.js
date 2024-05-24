@@ -6,29 +6,6 @@ import L from 'leaflet';
 import customIconUrl from '../../images/placeholder.png';
 import './MapComponent.css'
 
-const UpdateMapCenter = ({ center, zoom }) => {
-    const map = useMap();
-  
-    React.useEffect(() => {
-        if (center) map.flyTo(center, zoom);
-
-
-        // const x1 = -87.80788421630861;
-        // const y1 = 41.79038482309324;
-        // const x2 = -87.59227752685548;
-        // const y2 = 41.90955923001296;
-    
-        // const bounds = [[y1, x1], [y2, x2]];
-        // //console.log(bounds)
-  
-        // L.rectangle(bounds, { color: '#ff7800', weight: 1 }).addTo(map);
-      
-      
-    }, [center, zoom, map]);
-  
-    return null;
-};
-
 const customIcon = new L.Icon({
     iconUrl: customIconUrl,
     iconSize: [50, 50], // size of the icon
@@ -37,54 +14,70 @@ const customIcon = new L.Icon({
     // className: 'iconCont' // Adding custom class name
 });
 
-function ZoomableMarker({ location, info, assetData, setAddress, setPin, setZoning, setValues }) {
+function ZoomableMarker({ location, info, setAddress, setPin, setZoning, setValues, setZoneLink }) {
     const [zone, setZone] = React.useState('');
     const [popupOpen, setPopupOpen] = React.useState(false);
-    const [data, setData] = React.useState();
-    const [error, setError] = React.useState();
     const markerRef = React.useRef(null);
-    let z = ""
     const map = useMap();
     
     React.useEffect(() => {
         map.setView([location[0], location[1]], map.getZoom() < 13 ? 13 : map.getZoom());
     }, [location, map]);
+
+    function getZoneLink(code) {
+		const zoneUrls = {
+			"R": "https://codelibrary.amlegal.com/codes/chicago/latest/chicagozoning_il/0-0-0-48923",
+			"B": "https://codelibrary.amlegal.com/codes/chicago/latest/chicagozoning_il/0-0-0-49164",
+			"C": "https://codelibrary.amlegal.com/codes/chicago/latest/chicagozoning_il/0-0-0-49164",
+			"D": "https://codelibrary.amlegal.com/codes/chicago/latest/chicagozoning_il/0-0-0-49338",
+			"M": "https://codelibrary.amlegal.com/codes/chicago/latest/chicagozoning_il/0-0-0-49579",
+			"PMD": "https://codelibrary.amlegal.com/codes/chicago/latest/chicagozoning_il/0-0-0-50128",
+			"PD": "https://codelibrary.amlegal.com/codes/chicago/latest/chicagozoning_il/0-0-0-50128",
+			"POS": "https://codelibrary.amlegal.com/codes/chicago/latest/chicagozoning_il/0-0-0-49648"
+		};
+		console.log(code)
+		let prefix = code.charAt(0)
+		console.log(prefix)
+
+		if (prefix === 'P') {
+			if (code.charAt(1) === "O") {
+				return zoneUrls["POS"]
+			} else {
+				return zoneUrls["PD"]
+			}
+		}
+		return zoneUrls[prefix]
+	}
     
     //console.log(assetData)
     const handleClick = async () => {
-        setAddress(info.ADDRDELIV)
+        let addy = info.ADDRDELIV + ' ' + info.PLACENAME + ', ' + info.State + ' ' + info["Post_Code"];
+        
+        setAddress(addy)
         setPin(info.PIN)
         setZoning("")
-        setValues()
-        try {
+        setValues("")
+        try { // get zone class info
 			const response = await axios.get(`https://data.cityofchicago.org/api/geospatial/dj47-wfun?lat=${location[0]}&lng=${location[1]}8&zoom=13`);
-
-			if (response.data) {
-                //console.log(response.data[0])
+            
+			if (response.data.length !== 0) {
 				setZone(response.data[0]["zone_class"])
                 setZoning(response.data[0]["zone_class"])
-				//results.push(response.data.features);
+                let zoneLink = getZoneLink(response.data[0]["zone_class"]);
+                setZoneLink(zoneLink)
+
 			}
-			//console.log(results[0].features[0]);
 		} catch (error) {
 			console.error(`Error fetching data `, error);
 		}
 
-        try {
-            fetch(`http://localhost:3001/api/data/${info.PIN}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    //console.log(response.json())
-                    return response.json();
-            })
-            .then(data => setValues(data))
-            .then(data => console.log(data))
-            .catch(error => {
-                console.error('Error fetching data:', error);
-                setError(error.message);
-            });
+        try { // get scraping info
+            const response = await fetch(`http://localhost:3001/api/data/${info.PIN}`)
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            setValues(data);  // Ensure this is called correctly
         } catch (error) {
             console.error(`Error fetching data `, error);
         }
@@ -112,9 +105,6 @@ function ZoomableMarker({ location, info, assetData, setAddress, setPin, setZoni
             {popupOpen && (<Popup>
                 <p>ADDRESS: {info.ADDRDELIV}</p>
                 <p>PIN: {info.PIN}</p>
-                {/* <p>SQFT: {footage}</p>
-                <p>Value: {value}</p> */}
-                {/* <p>PROPERTY USE: {assetData["Property Use"]}</p> */}
                 {zone ? <p>Zone Class: {zone}</p> : <></>}
                 
             </Popup>)}
@@ -122,67 +112,19 @@ function ZoomableMarker({ location, info, assetData, setAddress, setPin, setZoni
     );
 }
 
-const MapComponent = ({ center, zoom, locationData, assetData, setAddress, setPin, setZoning, setValues }) => {
-    const [map, setMap] = React.useState(null);
-    const [locations, setLocations] = React.useState();
-    const [data, setData] = React.useState([]);
-
-    //console.log(locationData)
-
-    //-87.80788421630861,41.79038482309324,-87.59227752685548,41.90955923001296
-    //41.79038482309324,-87.80788421630861,41.90955923001296,-87.59227752685548
-
-    // Custom hook to detect map movement
-    function MapMovementHandler() {
-        const map = useMap();
-        React.useEffect(() => {
-            const handleMove = () => {
-                const bounds = map.getBounds();
-                //console.log(bounds);
-                //fetchData(bounds);
-            };
-            map.on('moveend', handleMove);
-            return () => {
-                map.off('moveend', handleMove);
-            };
-        }, [map], data);
-        return null;
-    }
-
-    // Fetch data from API based on map bounds
-    // const fetchData = async (bounds) => {
-    //     const { _northEast, _southWest } = bounds;
-    //     const { lat: ymin, lng: xmin } = _southWest;
-    //     const { lat: ymax, lng: xmax } = _northEast;
-    //     console.log( xmin + ',' + ymin + "," + xmax + "," + ymax)
-    //     // console.log( ymin)
-    //     // console.log( xmax)
-    //     // console.log( ymax)
-    //     //const url = `https://gis.cookcountyil.gov/traditional/rest/services/addressZipCode/MapServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&geometry=${xmin}%2C${ymin}%2C${xmax}%2C${ymax}&spatialRel=esriSpatialRelIntersects&outFields=*&outSR=4326&f=json`;
-    //     const url = `https://gis.cookcountyil.gov/traditional/rest/services/addressZipCode/MapServer/0/query?where=1%3D1&outFields=*&geometry=${ymin}%2C${xmin}%2C${ymax}%2C${xmax}&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelWithin&outSR=4326&f=json`;
-    //     console.log(url)
-    //     //const url = `https://gis.cookcountyil.gov/traditional/rest/services/addressZipCode/MapServer/0/query?where=&outFields=*&outSR=4326&f=json&bbox=${_southWest.lng},${_southWest.lat},${_northEast.lng},${_northEast.lat}`;
-        
-    //     try {
-    //         const response = await fetch(url);
-    //         const responseData = await response.json();
-    //         console.log(responseData.features)
-    //         setData(responseData.features);
-    //     } catch (error) {
-    //         console.error('Error fetching data:', error);
-    //     }
-    // };
+const MapComponent = ({ center, zoom, locationData, setAddress, setPin, setZoning, setValues, setZoneLink }) => {
+    // const [map, setMap] = React.useState(null);
+    // const [locations, setLocations] = React.useState();
+    // const [data, setData] = React.useState([]);
 
     return (
-        <MapContainer center={center} zoom={zoom} style={{ height: window.innerHeight-120, width: '100%' }}>
-            <MapMovementHandler />
+        <MapContainer center={center} zoom={zoom} style={{ height: window.innerHeight-120, width: '100%', zIndex:'0', boxShadow: "inset 20px 10px 25px -12px black" }}>
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
-            <UpdateMapCenter center={center} zoom={zoom} />
             {locationData ? locationData.map((location, index) => (
-                <ZoomableMarker key={index} location={[location.geometry.y, location.geometry.x]} info={location.attributes} assetData={assetData[index]} setAddress={setAddress} setPin={setPin} setZoning={setZoning} setValues={setValues}/>                    
+                <ZoomableMarker key={index} location={[location.geometry.y, location.geometry.x]} info={location.attributes} setAddress={setAddress} setPin={setPin} setZoning={setZoning} setValues={setValues} setZoneLink={setZoneLink}/>                    
             )) : <></>}
         </MapContainer>
     );
