@@ -4,7 +4,8 @@ const cors = require('cors');
 
 const app = express();
 const corsOptions = {
-    origin: ["http://localhost:3000","https://real-estate-indol-eight.vercel.app/"], // Adjust according to your security requirements
+    origin:'*',
+    // origin: ["http://localhost:3000","https://real-estate-indol-eight.vercel.app"], // Adjust according to your security requirements
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
     credentials: true

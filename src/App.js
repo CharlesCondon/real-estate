@@ -114,7 +114,7 @@ function App() {
 						{zone && (
 							<>
 								<div>
-									<h2>Zone:</h2>
+									<h2>Zoning Code:</h2>
 									<h3>{zone}</h3>
 									<a href={zoneLink} target='_blank' rel='noreferrer'>Learn More {'>'}</a>
 								</div>
@@ -153,7 +153,7 @@ function App() {
 							<div>
 								{/* <h3>Value: {USDollar.format(values.value)}</h3> */}
 								<div>
-									<h2>Tax History</h2>
+									<h2>Tax Bills & History</h2>
 									<div>
 										<h3>2023:</h3>
 										<a href={values["2023 taxbill"]} target='_blank' rel="noreferrer">Tax Year 2023 First Installment</a>
