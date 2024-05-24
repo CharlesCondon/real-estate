@@ -1,0 +1,17 @@
+{
+    "name": "backend-server",
+    "version": "1.0.0",
+    "description": "backend server for mvp",
+    "main": "server.js",
+    "scripts": {
+      "start": "node server.js"
+    },
+    "dependencies": {
+      "express": "^4.17.1",
+      "http": "^0.0.1-security",
+      "cors": "^2.8.5"
+    },
+    "engines": {
+      "node": ">=14"
+    }
+  }

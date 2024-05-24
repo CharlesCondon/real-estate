@@ -1,9 +1,16 @@
 const express = require('express');
 const XLSX = require('xlsx');
 const cors = require('cors');
-const app = express();
 
-app.use(cors()); // Use CORS to allow cross-origin access
+const app = express();
+const corsOptions = {
+    origin: ["http://localhost:3000","https://threes-psi.vercel.app"], // Adjust according to your security requirements
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+    credentials: true
+}
+
+app.use(cors(corsOptions)); // Use CORS to allow cross-origin access
 
 // Endpoint to get spreadsheet data
 // app.get('/api/data', (req, res) => {
