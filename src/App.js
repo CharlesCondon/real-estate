@@ -30,7 +30,12 @@ function App() {
 		
 		let url;
 		if (inputType === 0) {
-			url = `https://gis.cookcountyil.gov/traditional/rest/services/addressZipCode/MapServer/0/query?where=PIN%20%3D%20'${userInput}'&outFields=*&outSR=4326&f=json`
+			let str = userInput;
+			if (str.toString().length < 14) {
+				str = '0' + userInput.toString();
+			}
+
+			url = `https://gis.cookcountyil.gov/traditional/rest/services/addressZipCode/MapServer/0/query?where=PIN%20%3D%20'${str}'&outFields=*&outSR=4326&f=json`
 		} else {
 			let str = '';
 			for (let i = 0; i < userInput.length; i++) {
