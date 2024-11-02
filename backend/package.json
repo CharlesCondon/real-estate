@@ -4,7 +4,8 @@
     "description": "backend server for mvp",
     "main": "server.js",
     "scripts": {
-      "start": "node server.js"
+      "start": "node server.js",
+      "build": "babel server.js -d dist"
     },
     "dependencies": {
       "express": "^4.19.2",
@@ -14,5 +15,10 @@
     },
     "engines": {
       "node": ">=14"
+    },
+    "devDependencies": {
+      "@babel/cli": "^7.25.9",
+      "@babel/core": "^7.26.0",
+      "@babel/preset-env": "^7.26.0"
     }
   }
