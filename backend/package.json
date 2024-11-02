@@ -4,8 +4,8 @@
     "description": "backend server for mvp",
     "main": "server.js",
     "scripts": {
-      "start": "node server.js",
-      "build": "babel server.js -d dist"
+      "start": "node dist/server.js",
+      "build": "npx babel server.js -o dist/server.js"
     },
     "dependencies": {
       "express": "^4.19.2",
