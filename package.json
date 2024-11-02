@@ -29,7 +29,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "serverbuild": "./node_modules/.bin/babel ./backend/server.js -d dist",
+    "serverbuild": "npx babel ./backend/server.js -d dist",
     "serverstart": "node ./backend/server.js"
   },
   "eslintConfig": {
